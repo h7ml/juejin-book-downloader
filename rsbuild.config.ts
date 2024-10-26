@@ -1,12 +1,39 @@
-import { defineConfig } from "@rsbuild/core";
-import { pluginReact } from "@rsbuild/plugin-react";
-import { pluginWebExtension } from "rsbuild-plugin-web-extension";
-import manifest from "./manifest";
+import { defineConfig } from '@rsbuild/core';
+import { pluginLess } from '@rsbuild/plugin-less';
+import { pluginReact } from '@rsbuild/plugin-react';
+import { webxPlugin } from '@webx-kit/rsbuild-plugin';
+
 export default defineConfig({
-    plugins: [
-      pluginReact(),
-      pluginWebExtension({
-        manifest,
-      })
+  plugins: [
+    pluginLess(),
+    pluginReact(),
+    webxPlugin({
+      background: './src/background/index.ts',
+      contentScripts: {
+        import: './src/content-scripts/index.tsx',
+        matches: ['https://juejin.cn/book/*'],
+      },
+    }),
+  ],
+  source: {
+    entry: {
+      options: './src/pages/options/index.tsx',
+      popup: './src/pages/popup/index.tsx',
+    },
+  },
+  output: {
+    copy: [
+      {
+        from: './public',
+        to: './public',
+      },
     ],
+  },
+  tools: {
+    // postcss: {
+    //   postcssOptions: {
+    //     plugins: [require('tailwindcss')],
+    //   },
+    // },
+  },
 });

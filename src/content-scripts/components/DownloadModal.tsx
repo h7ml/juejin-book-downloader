@@ -4,14 +4,17 @@ import { useMount } from 'ahooks';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
-import type { SectionType } from '../api.ts';
-import { getBookInfo, getSectionInfo } from '../api.ts';
-import { replaceFileName, sleep, convertToHtml, convertToPdf } from '../utils.ts';
-import { saveToCache, getFromCache, clearCache, isCacheExpired, CachedSection } from '../utils/cache.ts';
+import { getBookInfo, getSectionInfo } from '../api/index';
+import { replaceFileName, sleep, convertToHtml, convertToPdf } from '../utils/';
+import { saveToCache, getFromCache, clearCache, isCacheExpired, CachedSection } from '../utils/cache';
 
 const { Title, Text } = Typography;
 
-const DownloadModal = () => {
+interface DownloadModalProps {
+    onConfirm: () => Promise<void>;
+}
+
+const DownloadModal: React.FC<DownloadModalProps> = ({ onConfirm }) => {
     const [open, setOpen] = useState(true);
     const [status, setStatus] = useState('准备就绪，可以开始下载');
     const [bookName, setBookName] = useState('');
@@ -95,7 +98,7 @@ const DownloadModal = () => {
             await sleep();
             const sectionInfo = await getSectionInfo(section.section_id);
             if (sectionInfo.err_no !== 0) {
-                setStatus(`第 ${index + 1} 章下载失败，下载终止`);
+                setStatus(`第 ${index + 1} 章获取失败，下载终止`);
                 setIsFetching(false);
                 return;
             }
@@ -106,7 +109,7 @@ const DownloadModal = () => {
                 title: `${index + 1}. ${sectionTitle}`,
                 cachedAt: Date.now()
             });
-            setStatus(`第 ${index + 1} 章下载完成：${sectionTitle}`);
+            setStatus(`第 ${index + 1} 章获取完成：${sectionTitle}`);
         }
         setSections(updatedSections);
         saveToCache(bookId, updatedSections);
