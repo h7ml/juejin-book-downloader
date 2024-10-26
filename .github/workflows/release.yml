@@ -14,8 +14,26 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '16'
-    - run: npm ci
-    - run: npm run build
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 7
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+    - uses: actions/cache@v3
+      name: Setup pnpm cache
+      with:
+        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+    - name: Install dependencies
+      run: pnpm install
+    - name: Build
+      run: pnpm run build
     - name: Zip Extension
       run: zip -r juejin-book-downloader.zip dist
     - name: Create Release
