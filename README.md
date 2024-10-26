@@ -2,12 +2,11 @@
 
 <div align="center">
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/h7ml/juejin-book-downloader/ci.yml?branch=main)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/h7ml/juejin-book-downloader)
-![GitHub top language](https://img.shields.io/github/languages/top/h7ml/juejin-book-downloader)
-![GitHub](https://img.shields.io/github/license/h7ml/juejin-book-downloader)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/h7ml/juejin-book-downloader/lint.yml?branch=main)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/h7ml/juejin-book-downloader?author=h7ml)
+![GitHub top language](https://img.shields.io/github/languages/top/h7ml/juejin-book-downloader?author=h7ml)
+![GitHub](https://img.shields.io/github/license/h7ml/juejin-book-downloader?author=h7ml)
 ![GitHub stars](https://img.shields.io/github/stars/h7ml/juejin-book-downloader?style=social)
-
 </div>
 
 ## 📚 目录
