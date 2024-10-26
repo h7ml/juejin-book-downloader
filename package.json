@@ -1,0 +1,77 @@
+{
+  "name": "juejin-book-downloader",
+  "version": "1.0.0",
+  "description": "一个用于下载掘金小册的Chrome扩展工具 / A Chrome extension tool for downloading books from Juejin",
+  "private": true,
+  "author": {
+    "name": "h7ml",
+    "email": "h7ml@qq.com",
+    "url": "https://github.com/h7ml"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/h7ml/juejin-book-downloader",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/h7ml/juejin-book-downloader.git"
+  },
+  "bugs": {
+    "url": "https://github.com/h7ml/juejin-book-downloader/issues"
+  },
+  "keywords": [
+    "juejin",
+    "掘金",
+    "小册",
+    "下载器",
+    "chrome-extension",
+    "book-downloader"
+  ],
+  "scripts": {
+    "dev": "rsbuild dev --open",
+    "build:watch": "rsbuild build --watch",
+    "build": "rsbuild build",
+    "preview": "rsbuild preview"
+  },
+  "type": "module",
+  "dependencies": {
+    "@ant-design/icons": "^5.5.1",
+    "@rspack/cli": "^1.0.14",
+    "@rspack/plugin-react-refresh": "^1.0.0",
+    "ahooks": "^3.8.0",
+    "antd": "^5.19.3",
+    "file-saver": "^2.0.5",
+    "html2pdf.js": "^0.10.1",
+    "jspdf": "^2.5.1",
+    "jszip": "^3.10.1",
+    "marked": "^4.0.12",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^1.0.17",
+    "@rsbuild/plugin-react": "^1.0.5",
+    "@types/chrome": "^0.0.279",
+    "@types/file-saver": "^2.0.7",
+    "@types/node": "^22.8.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "cross-env": "^7.0.3",
+    "css-loader": "^7.1.2",
+    "postcss": "^8.4.41",
+    "postcss-loader": "^8.1.1",
+    "react-refresh": "^0.14.0",
+    "rsbuild-plugin-web-extension": "^0.0.10",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "^3.4.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  },
+  "webExt": {
+    "sourceDir": "dist",
+    "run": {
+      "startUrl": [
+        "https://juejin.cn/"
+      ]
+    }
+  }
+}
