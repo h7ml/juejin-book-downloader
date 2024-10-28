@@ -31,19 +31,25 @@ export const App: React.FC = () => {
    * 注入下载按钮
    */
   const injectDownloadBtn = () => {
+    // const linkEl = document.createElement('link');
+    // linkEl.rel = 'stylesheet';
+    // linkEl.href = 'https://cdn.tailwindcss.com/3.4.5';
+    // document.head.appendChild(linkEl);
     const buyEle = document.querySelector('.is-buy');
     const injectBtn = document.querySelector('.other');
     const sectionEle = document.querySelector('.book-content__header> .title');
-    
+
     // 如果已经存在下载按钮，则直接返回
     if (document.querySelector('#download')) return;
-    
+
     // 判断是否为单章节页面并提取 ID
-    const urlMatch = window.location.href.match(/\/book\/(\d+)\/section\/(\d+)/);
+    const urlMatch = window.location.href.match(
+      /\/book\/(\d+)\/section\/(\d+)/
+    );
     const isSectionPage = !!urlMatch;
     const bookId = urlMatch ? urlMatch[1] : null;
     const sectionId = urlMatch ? urlMatch[2] : null;
-    
+
     // 创建下载按钮元素
     const downloadEle = document.createElement('div');
     downloadEle.id = 'download';
@@ -51,35 +57,37 @@ export const App: React.FC = () => {
     if (isSectionPage) {
       downloadEle.style.display = 'contents';
     }
-    
+
     // 渲染下载按钮内容
     ReactDOM.createRoot(downloadEle).render(
       <React.StrictMode>
         <Popconfirm
           title={isSectionPage ? '是否下载本章' : '是否下载此小册'}
           onConfirm={isSectionPage ? handleDownload : showConfirm}
-          okText='确认'
-          cancelText='取消'
+          okText="确认"
+          cancelText="取消"
         >
           <Button
             type={isSectionPage ? 'default' : 'primary'}
             icon={<DownloadOutlined />}
-            size='large'
-            style={isSectionPage ? { fontWeight: 'bold', fontSize: '16px' } : {}}
+            size="large"
+            style={
+              isSectionPage ? { fontWeight: 'bold', fontSize: '16px' } : {}
+            }
           >
             {isSectionPage ? '下载本章' : '下载小册'}
           </Button>
         </Popconfirm>
       </React.StrictMode>
     );
-    
+
     // 情况1：在小册首页插入下载按钮
     if (buyEle && injectBtn) {
       injectBtn.appendChild(downloadEle);
       setIsInjected(true);
       return;
     }
-    
+
     // 情况2：在单章节页面插入下载按钮
     if (isSectionPage) {
       sectionEle && sectionEle.appendChild(downloadEle);
