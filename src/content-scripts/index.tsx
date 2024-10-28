@@ -7,6 +7,7 @@ import packageJson from '../../package.json';
 
 // 创建影子DOM UI
 createShadowRootUI({
+  styles: chrome.runtime.getURL('static/css/content-script.css'),
   render({ root }) {
     // 定义控制台输出的样式
     const styles = {

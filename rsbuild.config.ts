@@ -30,10 +30,10 @@ export default defineConfig({
     ],
   },
   tools: {
-    // postcss: {
-    //   postcssOptions: {
-    //     plugins: [require('tailwindcss')],
-    //   },
-    // },
+    postcss: {
+      postcssOptions: {
+        plugins: [require('tailwindcss')],
+      },
+    },
   },
 });
