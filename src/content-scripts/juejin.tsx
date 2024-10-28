@@ -13,6 +13,8 @@ export const App: React.FC = () => {
   const [isInjected, setIsInjected] = useState(false);
   // 当前页面URL
   const [currentUrl, setCurrentUrl] = useState('');
+  // 是否已加载tailwindcss
+  const [isTailwindLoaded, setIsTailwindLoaded] = useState(false);
 
   /**
    * 显示确认对话框
@@ -28,13 +30,26 @@ export const App: React.FC = () => {
   };
 
   /**
+   * 加载tailwindcss
+   */
+  const loadTailwindCSS = () => {
+    if (
+      !isTailwindLoaded &&
+      !document.querySelector('link[href*="tailwindcss"]')
+    ) {
+      const linkEl = document.createElement('link');
+      linkEl.rel = 'stylesheet';
+      linkEl.href = 'https://cdn.tailwindcss.com/3.4.5';
+      document.head.appendChild(linkEl);
+      setIsTailwindLoaded(true);
+    }
+  };
+
+  /**
    * 注入下载按钮
    */
   const injectDownloadBtn = () => {
-    // const linkEl = document.createElement('link');
-    // linkEl.rel = 'stylesheet';
-    // linkEl.href = 'https://cdn.tailwindcss.com/3.4.5';
-    // document.head.appendChild(linkEl);
+    loadTailwindCSS();
     const buyEle = document.querySelector('.is-buy');
     const injectBtn = document.querySelector('.other');
     const sectionEle = document.querySelector('.book-content__header> .title');
