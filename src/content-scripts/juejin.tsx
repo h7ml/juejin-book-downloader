@@ -19,10 +19,10 @@ export const App: React.FC = () => {
   /**
    * 显示确认对话框
    */
-  const showConfirm = () => {
+  const showConfirm = async () => {
     const downloadEle = document.createElement('div');
     document.body.appendChild(downloadEle);
-    ReactDOM.createRoot(downloadEle).render(
+    await ReactDOM.createRoot(downloadEle).render(
       <React.StrictMode>
         <DownloadModal onConfirm={handleDownload} />
       </React.StrictMode>
@@ -32,15 +32,21 @@ export const App: React.FC = () => {
   /**
    * 加载tailwindcss
    */
-  const loadTailwindCSS = () => {
+  const loadTailwindCSS = async () => {
     if (
       !isTailwindLoaded &&
-      !document.querySelector('link[href*="tailwindcss"]')
+      !document.querySelector('script[src*="tailwindcss"]')
     ) {
       const linkEl = document.createElement('link');
       linkEl.rel = 'stylesheet';
-      linkEl.href = 'https://cdn.tailwindcss.com/3.4.5';
-      document.head.appendChild(linkEl);
+      linkEl.href = chrome.runtime.getURL('static/css/content-script.css');
+      await document.head.appendChild(linkEl);
+
+      // 加载 tailwind CDN
+      const scriptEl = document.createElement('script');
+      scriptEl.src = 'https://cdn.tailwindcss.com';
+      await document.head.appendChild(scriptEl);
+
       setIsTailwindLoaded(true);
     }
   };
@@ -48,14 +54,13 @@ export const App: React.FC = () => {
   /**
    * 注入下载按钮
    */
-  const injectDownloadBtn = () => {
-    loadTailwindCSS();
+  const injectDownloadBtn = async () => {
+    // 如果已经存在下载按钮，则直接返回
+    if (document.querySelector('#download')) return;
+
     const buyEle = document.querySelector('.is-buy');
     const injectBtn = document.querySelector('.other');
     const sectionEle = document.querySelector('.book-content__header> .title');
-
-    // 如果已经存在下载按钮，则直接返回
-    if (document.querySelector('#download')) return;
 
     // 判断是否为单章节页面并提取 ID
     const urlMatch = window.location.href.match(
@@ -74,7 +79,7 @@ export const App: React.FC = () => {
     }
 
     // 渲染下载按钮内容
-    ReactDOM.createRoot(downloadEle).render(
+    await ReactDOM.createRoot(downloadEle).render(
       <React.StrictMode>
         <Popconfirm
           title={isSectionPage ? '是否下载本章' : '是否下载此小册'}
@@ -98,14 +103,14 @@ export const App: React.FC = () => {
 
     // 情况1：在小册首页插入下载按钮
     if (buyEle && injectBtn) {
-      injectBtn.appendChild(downloadEle);
+      await injectBtn.appendChild(downloadEle);
       setIsInjected(true);
       return;
     }
 
     // 情况2：在单章节页面插入下载按钮
-    if (isSectionPage) {
-      sectionEle && sectionEle.appendChild(downloadEle);
+    if (isSectionPage && sectionEle) {
+      await sectionEle.appendChild(downloadEle);
       setIsInjected(true);
       return;
     }
@@ -115,12 +120,14 @@ export const App: React.FC = () => {
    * 观察DOM变化并注入按钮
    * @returns {MutationObserver} DOM观察器
    */
-  const observeAndInject = () => {
+  const observeAndInject = async () => {
     if (isInjected) return;
 
-    const observer = new MutationObserver(() => {
-      if (!document.querySelector('#download')) {
-        injectDownloadBtn();
+    const observer = new MutationObserver(async (mutations) => {
+      // 避免重复注入
+      if (!isInjected && !document.querySelector('#download')) {
+        await loadTailwindCSS();
+        await injectDownloadBtn();
       }
     });
     observer.observe(document, { childList: true, subtree: true });
@@ -130,30 +137,47 @@ export const App: React.FC = () => {
   /**
    * 检查URL变化
    */
-  const checkUrlChange = () => {
-    if (window.location.href !== currentUrl) {
-      setCurrentUrl(window.location.href);
+  const checkUrlChange = async () => {
+    const newUrl = window.location.href;
+    if (newUrl !== currentUrl) {
+      setCurrentUrl(newUrl);
       setIsInjected(false);
-      injectDownloadBtn();
+      // 移除已存在的下载按钮
+      const existingBtn = document.querySelector('#download');
+      if (existingBtn) {
+        existingBtn.remove();
+      }
+      await loadTailwindCSS();
+      await injectDownloadBtn();
     }
   };
 
   // 初始化函数
   useEffect(() => {
-    const observer = observeAndInject();
-    setCurrentUrl(window.location.href);
+    let observer: MutationObserver | null = null;
+    let intervalId: NodeJS.Timeout;
 
-    // 添加URL变化检测
-    window.addEventListener('popstate', checkUrlChange);
-    const intervalId = setInterval(checkUrlChange, 1000);
+    const init = async () => {
+      await loadTailwindCSS();
+      observer = (await observeAndInject()) || null;
+      setCurrentUrl(window.location.href);
+
+      // 添加URL变化检测
+      window.addEventListener('popstate', checkUrlChange);
+      intervalId = setInterval(checkUrlChange, 1000);
+    };
+
+    init();
 
     // 清理函数
     return () => {
-      if (observer) observer.disconnect();
+      if (observer) {
+        observer.disconnect();
+      }
       window.removeEventListener('popstate', checkUrlChange);
       clearInterval(intervalId);
     };
-  }, [isInjected, currentUrl]);
+  }, []); // 移除依赖数组中的isInjected和currentUrl
 
   return null;
 };

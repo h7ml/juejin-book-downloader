@@ -20,8 +20,7 @@ export default defineManifest(() => ({
     page: 'options.html',
     open_in_tab: true,
   },
-  permission: ['https://**/*'],
-  host_permissions: ['https://juejin.cn/*', 'https://**/*'],
+  host_permissions: ['https://juejin.cn/*', 'https://api.juejin.cn/*'],
   permissions: ['cookies'],
   web_accessible_resources: [
     {
